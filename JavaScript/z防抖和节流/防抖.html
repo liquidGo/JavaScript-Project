@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #div1 {
+            width: 1200px;
+            height: 500px;
+            margin: 0 auto;
+            background-color: aquamarine;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="div1">
+        <!-- 防抖的定义 -->
+        <!-- 间隔时间内，多次触发无效，以最后一次触发为准 -->
+
+        <!-- 未做防抖的网站 -->
+        <!-- https://www.elong.com/ -->
+
+        <!-- 做过防抖的网站 -->
+        <!-- https://xyq.163.com/ -->
+    </div>
+</body>
+<script>
+    var div1 = document.getElementById('div1');
+    // 盒子类
+    function Box(width, height, margin) {
+        this.width = width;
+        this.height = height;
+        this.margin = margin;
+        this.box = document.createElement('div');
+        this.box.style.cssText = 'transtion:0.5s ease;position:relative;display:inline-block;border:3px solid #red;background:#00f;'
+        this.box.style.width = this.width + 'px';
+        this.box.style.height = this.height + 'px';
+        this.box.style.marginLeft = this.margin + 'px';
+        div1.appendChild(this.box);
+    }
+    var 防抖;
+    Box.prototype.hover = function() {
+        var _this = this;
+        _this.box.onmousemove = function() {
+            clearTimeout(防抖);
+            防抖 = setTimeout(function() {
+                _this.box.style.background = 'red';
+            }, 500)
+        }
+        _this.box.onmouseout = function() {
+            clearTimeout(防抖);
+            _this.box.style.background = '#00f';
+        }
+    }
+    var box1 = new Box(100, 100, 50)
+    box1.hover();
+    var box2 = new Box(100, 100, 50)
+    box2.hover();
+    var box3 = new Box(100, 100, 50)
+    box3.hover();
+    var box4 = new Box(100, 100, 50)
+    box4.hover();
+    var box5 = new Box(100, 100, 50)
+    box5.hover();
+</script>
+
+</html>
