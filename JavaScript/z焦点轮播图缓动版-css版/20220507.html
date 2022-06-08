@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #big {
+            overflow: hidden;
+            position: relative;
+            left: 0;
+            top: 0;
+            width: 500px;
+            height: 300px;
+            margin: 0 auto;
+            border: 8px solid #222;
+        }
+        
+        #img {
+            position: relative;
+            left: 0;
+            top: 0;
+            width: 500px;
+            height: 300px;
+            transition: .5s ease;
+        }
+        
+        .img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #btn {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        #btn .btn_l {
+            position: absolute;
+            top: 50%;
+            margin-top: -10px;
+            left: 0;
+            background-color: burlywood;
+            width: 30px;
+            height: 20px;
+            line-height: 20px;
+            border: 1px solid #ccc;
+            text-align: center;
+            color: #fff;
+            cursor: pointer;
+        }
+        
+        #btn .btn_r {
+            position: absolute;
+            top: 50%;
+            margin-top: -10px;
+            right: 0;
+            background-color: burlywood;
+            width: 30px;
+            height: 20px;
+            line-height: 20px;
+            border: 1px solid #ccc;
+            text-align: center;
+            color: #fff;
+            cursor: pointer;
+        }
+        
+        #focus {
+            position: absolute;
+            left: 198px;
+            top: 270px;
+        }
+        
+        #focus span {
+            display: inline-block;
+            padding-right: 10px;
+            width: 16px;
+            height: 16px;
+            background: url(./images/dot.png) no-repeat;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+    </script>
+</head>
+
+<body>
+    <!-- 最外层大盒子 -->
+    <div id="big">
+        <!-- 五张图片 -->
+        <div id="img">
+            <div class="img" style="text-align: center; color: #ccc; font-size: 200px; background-color: green;">0</div>
+            <div class="img" style="text-align: center; color: #ccc; font-size: 200px; background-color: red;">1</div>
+            <div class="img" style="text-align: center; color: #ccc; font-size: 200px; background-color: #f60;">2</div>
+            <div class="img" style="text-align: center; color: #ccc; font-size: 200px; background-color: #f06;">3</div>
+        </div>
+        <!-- 左右侧按钮 -->
+        <div id="btn">
+            <div id="btnf" class="btn_l">＜</div>
+            <div id="btnr" class="btn_r">＞</div>
+        </div>
+        <!-- 聚焦 -->
+        <div id="focus">
+            <span style="background:url(./images/dotActive.png) no-repeat"></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+</body>
+<script>
+    var big = document.getElementById('big');
+    img = document.getElementById('img');
+    var imgs = img.getElementsByTagName('div');
+    var btnf = document.getElementById('btnf');
+    var btnr = document.getElementById('btnr');
+    var focus = document.getElementById('focus');
+    var spans = focus.getElementsByTagName('span');
+    // 重新定位每一张图片
+    for (var i = 1; i < imgs.length; i++) {
+        imgs[i].style.left = imgs[i - 1].offsetLeft + 500 + 'px'
+    }
+    // 增加一个变量来获取每次触发事件的值
+    var imgClone = img.firstElementChild.cloneNode(true)
+    img.appendChild(imgClone)
+    img.lastElementChild.style.left = '2000px'
+    var btn_1 = 0;
+    var 节流阀 = true;
+    // 右侧按钮的实现
+    btnr.onclick = function() {
+            if (节流阀 === false) return;
+            // 点一次＋1
+            btn_1++;
+            img.style.left = -500 * btn_1 + 'px';
+            img.style.transition = ' .5s ease'
+            if (btn_1 == 4) {
+                btn_1 = 0;
+                setTimeout(function() {
+                    img.style.left = -500 * btn_1 + 'px';
+                    img.style.transition = 'none';
+                }, 500)
+            }
+            spans1();
+            节流阀 = false;
+            setTimeout(function() {
+                节流阀 = true;
+            }, 500)
+        }
+        // 左侧按钮的实现
+    btnf.onclick = function() {
+            if (节流阀 === false) return;
+            // 先彻底删除缓动，到达指定地点再开始缓动
+            btn_1--;
+            if (btn_1 === -1) {
+                img.style.transition = 'none';
+                img.style.left = -500 * 4 + 'px';
+                setTimeout(function() {
+                    console.log(btn_1);
+                    btn_1 = 3;
+                    img.style.left = -500 * btn_1 + 'px';
+                    img.style.transition = ' .5s ease'
+                        // 因为倒计时器的值是后弹出来，所以执行完倒计时的时候仍是-1，spans里面没-1这个值，所以不会高亮，所以我们需要在倒计时结束值传递完毕的时候再重新判断高亮
+                    spans1();
+                    // 执行完比以后重新判断按钮高光，否则一直在第一个高光
+                }, 0)
+                console.log(btn_1);
+            } else {
+                img.style.left = -500 * btn_1 + 'px';
+            }
+            spans1();
+            节流阀 = false;
+            setTimeout(function() {
+                节流阀 = true;
+            }, 500)
+        }
+        // 给选中按钮高光
+    function spans1() {
+        for (var l = 0; l < spans.length; l++) {
+            // 遍历出每一个spans的长度，如果等于这个触发值把这个值高亮
+            if (l == btn_1) {
+                for (var z = 0; z < spans.length; z++) {
+                    spans[z].style.cssText = 'background:url(./images/dot.png) no-repeat'
+                }
+                spans[l].style.cssText = 'background:url(./images/dotActive.png) no-repeat'
+            }
+        }
+    }
+    // 给每个小点绑定事件
+    for (var i = 0; i < spans.length; i++) {
+        spans[i].index = i;
+        spans[i].onclick = function() {
+            img.style.transition = '.5s ease'
+            btn_1 = this.index;
+            spans1();
+            img.style.left = -500 * btn_1 + 'px';
+        }
+    }
+    // 自动轮播
+    var z = setInterval(function() {
+            btnr.onclick()
+        }, 2000)
+        // 如果鼠标移入停止自动
+    big.onmouseenter = function() {
+        clearInterval(z)
+    }
+    big.onmouseleave = function() {
+        // 先清再添加
+        clearInterval(z)
+        z = setInterval(function() {
+            btnr.onclick()
+        }, 2000)
+    }
+</script>
+
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
+    </script>
+    <style>
+        #big {
+            overflow: hidden;
+            position: relative;
+            margin: 0 auto;
+            width: 500px;
+            height: 300px;
+            border: 3px solid #ccc;
+        }
+        
+        #img {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        #img div {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            font-size: 250px;
+            text-align: center;
+        }
+        
+        #btn button {
+            position: absolute;
+            top: 45%;
+        }
+        
+        #left {
+            left: 0;
+        }
+        
+        #right {
+            right: 0;
+        }
+        
+        #focus {
+            display: inline-block;
+            position: relative;
+            left: 200px;
+            top: 275px;
+        }
+        
+        .foc {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border: 1px solid #ccc;
+            margin-left: 10px;
+            border-radius: 50%;
+            background-color: red;
+            cursor: pointer;
+        }
+        
+        .foc2 {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border: 1px solid #ccc;
+            margin-left: 10px;
+            border-radius: 50%;
+            background-color: #000;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="big">
+        <div id="img">
+            <div style="background-color: #00e">0</div>
+            <div style="background-color: #f60;">1</div>
+            <div style="background-color:#0f0 ;">2</div>
+        </div>
+        <div id="btn">
+            <button id="left">＜</button>
+            <button id="right">＞</button>
+        </div>
+        <div id="focus">
+            <span class="foc2"></span>
+            <span class="foc"></span>
+            <span class="foc"></span>
+        </div>
+    </div>
+</body>
+<script>
+    (function() {
+        var 节流阀 = true
+        $(function() {;
+                $('#img').append($('#img div:eq(0)').clone())
+                    // 排列图片
+                $('#img div').each(function(i) {
+                        if (i > 0) {
+                            $(this).css({
+                                left: $(this).prev().position().left + 500 + 'px'
+                            })
+                        }
+                    })
+                    // 克隆图片
+
+            })
+            // 右侧按钮
+        var bt = 0;
+
+        $("#right").click(function() {
+            if (节流阀 == false) return;
+            bt++;
+            span1();
+            if (bt == 3) {
+                $('#focus span:first').removeClass('foc').addClass('foc2');
+            }
+            $('#img').animate({
+                left: -500 * bt
+            }, 500, function() {
+                if (bt == 3) {
+                    bt = 0;
+                    $("#img").css({
+                        left: -500 * bt + 'px'
+                    })
+                }
+            })
+            节流阀 = false;
+
+            setTimeout(function() {
+                节流阀 = true;
+            }, 1000)
+        })
+
+        // 左侧按钮
+        $('#left').click(function() {
+                if (节流阀 == false) return;
+
+                bt--;
+                if (bt == -1) {
+                    bt = 3;
+                    $("#img").css({
+                        left: -500 * 3
+                    })
+                    bt = 2;
+                    $("#img").animate({
+                        left: -500 * bt
+                    }, 500)
+                }
+                $('#img').animate({
+                    left: -500 * bt
+                })
+                span1();
+                节流阀 = false;
+
+                setTimeout(function() {
+                    节流阀 = true;
+                }, 1000)
+            })
+            // 点击切换图片部分
+        $('#focus span').each(function(i) {
+                $(this).attr('data-index', i)
+                $(this).click(function() {
+                    bt = $(this).attr('data-index');
+                    $('#img').animate({
+                        left: -500 * bt
+                    })
+                    span1();
+                })
+            })
+            // 自动轮播部分
+        var z = setInterval(function() {
+            $("#right").click()
+        }, 2000)
+        $('#img').mouseenter(function() {
+            clearInterval(z)
+        })
+        $('#img').mouseleave(function() {
+            clearInterval(z)
+
+            z = setInterval(function() {
+                $("#right").click()
+            }, 2000)
+        })
+
+
+        // 焦点判断部分
+        function span1() {
+            $('#focus span').each(function(i, ele) {
+                $(this).removeClass('foc2')
+                $(this).addClass('foc');
+                if (bt == i) {
+                    $(this).removeClass('foc')
+                    $(this).addClass('foc2');
+                }
+            })
+        }
+    })()
+</script>
+
+</html>
